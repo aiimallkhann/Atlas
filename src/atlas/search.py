@@ -1,17 +1,17 @@
 def search_text(chunks, query):
-    query = query.lower()
-    chunks = [chunk.lower() for chunk in chunks]
-    # split_chunks = chunks.split()
-    # split_query = query.split()
+    query_words = query.lower().split()
+    results = []
+
+    if not query_words:
+        return []
+
     for chunk in chunks:
-        found = False
-        if query in chunk:
-            found = True
-            print(f'Found Query {query} in chunk.\n')
-            print(chunk)
-            return
-        print('Query not found.\n')
-        return False
-    return
-chunks = ['this is the first chunk', 'this is the second chunk']
-search_text(chunks, 'nigga')
+        chunk_words = chunk.lower().split()
+        score = sum(1 for word in query_words if word in chunk_words)
+
+        if score > 0:
+            results.append((score, chunk))
+
+    ranked_results = sorted(results, key=lambda result: result[0], reverse=True)
+
+    return ranked_results

@@ -4,7 +4,11 @@ from atlas.analyzer import analyze_text
 from atlas.chunker import chunk_text
 from pathlib import Path
 
-def search_do (file_path, query, chunk_size):
+def search_document (file_path, query, chunk_size):
     path = Path(file_path)
-    print (path)
-search_do('C:/', 'hello', 5)
+    check = read_document(path)
+    if check is None:
+        return None
+    chunks = chunk_text(check, chunk_size)
+    results = search_text(chunks, query)
+    return results

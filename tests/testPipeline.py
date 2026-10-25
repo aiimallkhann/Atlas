@@ -50,11 +50,5 @@ class TestPipeline(unittest.TestCase):
             self.assertGreaterEqual(scores[0], scores[-1])
             self.assertEqual(scores[0], 2)
 
-path = r'D:\New folder\My Works\hello.txt'
-query = 'love meaning'
-chunk_size = 10
-
-search_document(path, query, chunk_size)
-
 if __name__ == '__main__':
     unittest.main()

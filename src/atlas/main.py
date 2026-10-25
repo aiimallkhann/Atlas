@@ -1,4 +1,5 @@
 from atlas.pipeline import search_document
+from atlas.reader import read_document
 
 def main():
     file_path = input("Enter the path to your .txt file: ").strip().strip('"')
@@ -15,8 +16,13 @@ def main():
         if result is None:
             print("File not found or could not be read.")
             return
-        print("\nFull Document:")
+        print("\nDocument Name:")
         print(result["source"])
+        
+        full_text = read_document(file_path)
+
+        print("\nFull Document:\n")
+        print(full_text)
 
         print("\nStatistics:")
         print(result["statistics"])

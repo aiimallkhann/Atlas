@@ -11,4 +11,9 @@ def search_document (file_path, query, chunk_size):
         return None
     chunks = chunk_text(check, chunk_size)
     results = search_text(chunks, query)
-    return results
+    stats = analyze_text(check)
+    return {
+        'statistics': stats,
+        'results': results,
+        'source': path.name
+    }

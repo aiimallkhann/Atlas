@@ -15,6 +15,8 @@ def main():
         if result is None:
             print("File not found or could not be read.")
             return
+        print("\nFull Document:")
+        print(result["source"])
 
         print("\nStatistics:")
         print(result["statistics"])

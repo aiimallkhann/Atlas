@@ -19,6 +19,14 @@ class TestMultiPipeline(unittest.TestCase):
             self.assertTrue(result)
             self.assertEqual(len(result), 2)
 
+    def test_invalid_folder(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            invalid_folder = Path(temp_dir) / "does_not_exist"
+
+            result = search_document(invalid_folder, "hello", 1)
+
+            self.assertIsNone(result)
+
 
 if __name__ == "__main__":
     unittest.main()

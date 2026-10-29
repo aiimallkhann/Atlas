@@ -41,8 +41,3 @@ def search_document(folder_path, query, chunk_size):
 
     return result_chunks_docs
 
-
-path = Path(r"D:\New folder\My Works")
-results = search_document(path, "express", 3)
-print("\nFinal results:")
-print(results)

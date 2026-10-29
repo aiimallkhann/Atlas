@@ -16,7 +16,7 @@ class TestDocumentLoader(unittest.TestCase):
             
             result = discover_documents(folder)
             
-            self.asserEqual(len(result), 2)
+            self.assertEqual(len(result), 2)
             self.assertTrue(all(path.suffix == ".txt" for path in result))
     def test_empty_folder(self):
         with tempfile.TemporaryDirectory() as temp_dir:

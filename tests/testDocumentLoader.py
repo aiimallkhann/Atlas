@@ -7,7 +7,6 @@ from atlas.document_loader import discover_documents
 
 
 class TestDocumentLoader(unittest.TestCase):
-    
     def test_existing_folder_with_txt_file(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             folder = Path(temp_dir)

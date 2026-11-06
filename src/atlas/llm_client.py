@@ -18,7 +18,7 @@ class OllamaClient:
             'prompt': prompt,
             'stream': False
         }
-        r = self.client.post(self.host_url + '/api/generate', json=payload, timeout=60.0)
+        r = self.client.post(self.host_url + '/api/generate', json=payload, timeout=300.0)
         r.raise_for_status()
         parsed_json = r.json()
         
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     client = OllamaClient()
     
     # Dummy data
-    query = "What is DBMS?"
+    query = "What is 2+2?"
     chunks = ["Paris is the capital and most populous city of France."]
     
     # Run the pipeline

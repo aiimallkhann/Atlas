@@ -6,7 +6,7 @@ from atlas.search import search_vectors
 from pathlib import Path
 
 
-def search_document(folder_path, query_text, chunk_size, top_k=3):
+def search_documents_vector(folder_path, query_text, chunk_size, top_k=3):
     document_list = discover_documents(folder_path)
     if not document_list:
         return None

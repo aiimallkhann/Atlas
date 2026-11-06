@@ -9,7 +9,7 @@ def get_embedding (text, model = 'nomic-embed-text'):
     
     try:
         with httpx.Client() as client:
-            response = client.post(url, json=payload, time=30.0)
+            response = client.post(url, json=payload, timeout=30.0)
             response.raise_for_status()
             
             data = response.json()

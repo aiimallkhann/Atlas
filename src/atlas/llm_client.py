@@ -5,6 +5,7 @@ class OllamaClient:
     def __init__(self, host_url= 'http://localhost:11434', model_name='llama3'):
         self.host_url = host_url
         self.model_name = model_name
+        self.client = httpx.Client()
         
     def build_prompt(self, query: str, context_chunks: list[str]) ->str:
         joined_chunks = '\n\n'.join(context_chunks)
@@ -16,7 +17,7 @@ class OllamaClient:
             'prompt': prompt,
             'stream': False
         }
-        r = httpx.post(self.host_url + '/api/generate', json=payload, timeout=60.0)
+        r = self.client.post(self.host_url + '/api/generate', json=payload, timeout=60.0)
         parsed_json = r.json()
         
         # Proper Error Handling
@@ -29,7 +30,7 @@ if __name__ == "__main__":
     client = OllamaClient()
     
     # Dummy data
-    query = "What is the capital of Pakistan?"
+    query = "What is DBMS?"
     chunks = ["Paris is the capital and most populous city of France."]
     
     # Run the pipeline

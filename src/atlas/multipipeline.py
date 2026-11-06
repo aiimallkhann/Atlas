@@ -1,43 +1,54 @@
-
 from atlas.document_loader import discover_documents
 from atlas.reader import read_document
 from atlas.chunker import chunk_text
-from atlas.search import search_text
+from atlas.embedder import get_embedding
+from atlas.search import search_vectors
 from pathlib import Path
 
 
-def search_document(folder_path, query, chunk_size):
-    result_chunks_docs = []
-    documents_list = discover_documents(folder_path)
-
-    if documents_list is None:
+def search_document(folder_path, query_text, chunk_size, top_k=3):
+    document_list = discover_documents(folder_path)
+    if not document_list:
         return None
-
-    for file_path in documents_list:
+    print(f'Generating embedding for query: {query_text}...')
+    query_vector = get_embedding(query_text)
+    
+    if not query_vector:
+        print('Failed to generate query embedding.')
+        return None
+    
+    all_chunk_data = []
+    
+    for file_path in document_list:
         document_text = read_document(file_path)
-
         if document_text is None:
             continue
-
-        document_chunks = chunk_text(document_text, chunk_size)
-        results = search_text(document_chunks, query)
-
-        print("Searching:", file_path.name)
-        print("Results:", results)
-
-        for score, chunk in results:
-            result = {
-                "score": score,
-                "chunk": chunk,
-                "source": file_path.name
-            }
-
-            result_chunks_docs.append(result)
-
-    result_chunks_docs.sort(
-        key=lambda result: result["score"],
-        reverse=True
-    )
-
-    return result_chunks_docs
-
+        chunks = chunk_text(document_text, chunk_size)
+        print(f'Procesisng {file_path.name} ({len(chunks)} chunks)...')
+        
+        for chunk in chunks:
+            chunk_vec = get_embedding(chunk)
+            if chunk_vec:
+                all_chunk_data.append({
+                    'text' : chunk,
+                    'vector' : chunk_vec,
+                    'source' : file_path.name
+                })
+    if not all_chunk_data:
+        return None
+    searchable_data = [(item['text'], item['vector']) for item in all_chunk_data]
+    
+    print ('Ranking results via Cosine Similarity...')
+    
+    top_results = search_vectors(query_vector, searchable_data, top_k=top_k)
+    
+    final_results = []
+    
+    for result in top_results:
+        source_name = next(item['source'] for item in all_chunk_data if item['text'] == result['chunk'])
+        final_results.append({
+            'score': result['score'],
+            'chunk': result['chunk'],
+            'source': source_name
+        })
+    return final_results

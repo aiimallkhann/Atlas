@@ -8,8 +8,9 @@ class OllamaClient:
         self.client = httpx.Client()
         
     def build_prompt(self, query: str, context_chunks: list[str]) ->str:
+        rule = 'You are a strict research assistant for Project Atlas. Answer the question using only the provided Background Information.If the answer is not contained in the text, say \'I cannot answer based on this document.\' Do not guess.'
         joined_chunks = '\n\n'.join(context_chunks)
-        instructions = f'Background Information:\n{joined_chunks}\n\nQuestion:\n\n{query}' 
+        instructions = f'{rule}\n\nBackground Information:\n{joined_chunks}\n\nQuestion:\n\n{query}' 
         return instructions
     def generate(self, prompt: str) -> str:
         payload = {
@@ -18,9 +19,9 @@ class OllamaClient:
             'stream': False
         }
         r = self.client.post(self.host_url + '/api/generate', json=payload, timeout=60.0)
+        r.raise_for_status()
         parsed_json = r.json()
         
-        # Proper Error Handling
         if 'error' in parsed_json:
             raise RuntimeError(f"Ollama API Error: {parsed_json['error']}")
             

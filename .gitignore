@@ -2,3 +2,7 @@ __pycache__/
 practice_*.py
 user_vector_store.json
 vector_store.json
+#PyInstaller build artifacts
+build/
+dist/
+*.spec

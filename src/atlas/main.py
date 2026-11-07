@@ -4,24 +4,26 @@ from atlas.llm_client import OllamaClient
 def main():
     while True:
         print("\n=== Project Atlas ===")
-        print("1. Build/Update Knowledge Base (Index Documents)")
+        print("1. Build/Update Personal Knowledge Base (Private)")
         print("2. Chat with Atlas (Search & Ask)")
         print("3. Exit")
+        print("4. [Admin] Build Base Knowledge (Public)")
         
-        choice = input("Select an option (1-3): ").strip()
+        choice = input("Select an option: ").strip()
         
-        if choice == "1":
+        if choice in ["1", "4"]:
             folder_path = input("Enter the path to your document folder: ").strip().strip('"')
             try:
                 chunk_size = int(input("Enter chunk size (words): "))
-                build_index(folder_path, chunk_size)
+                # If they chose 4, is_base=True. If 1, is_base=False.
+                is_base_build = (choice == "4")
+                build_index(folder_path, chunk_size, is_base=is_base_build)
             except ValueError:
                 print("Chunk size must be a valid integer.")
                 
         elif choice == "2":
             question = input("\nAsk Atlas a question: ").strip()
             
-            # Instantly search the pre-built JSON index
             results = search_index(question, top_k=3)
             
             if not results:
@@ -52,7 +54,7 @@ def main():
             print("Shutting down Atlas...")
             break
         else:
-            print("Invalid choice. Please select 1, 2, or 3.")
+            print("Invalid choice. Please select 1, 2, 3, or 4.")
 
 if __name__ == "__main__":
     main()

@@ -11,11 +11,6 @@ BASE_STORE_FILE = "base_vector_store.json"
 USER_STORE_FILE = "user_vector_store.json"
 
 def build_index(folder_path, chunk_size, is_base=False):
-    """
-    PHASE 1: Reads, chunks, embeds, and saves to disk.
-    If is_base=True, saves to the public base store.
-    If is_base=False, saves to the private user store.
-    """
     document_list = discover_documents(folder_path)
     if not document_list:
         print("No documents found.")
@@ -55,9 +50,6 @@ def build_index(folder_path, chunk_size, is_base=False):
 
 
 def search_index(query_text, top_k=3):
-    """
-    PHASE 2: Loads BOTH databases (if they exist), merges them, and searches.
-    """
     if not query_text or not query_text.strip():
         return []
 

@@ -1,4 +1,4 @@
-from atlas.multipipeline import search_document
+from atlas.multipipeline import search_documents_vector
 from atlas.generator import build_prompt
 
 def ask_atlas(folder_path, query,chunk_size=50):

@@ -1,5 +1,5 @@
 def chunk_text(text, chunk_size=40, overlap=10):
-    if chunk_size <= 0:
+    if overlap < 0 or chunk_size <= 0:
         raise ValueError("chunk_size must be greater than 0")
 
     words = text.split()

@@ -1,52 +1,58 @@
-from atlas.multipipeline import search_documents_vector
+from atlas.multipipeline import build_index, search_index
 from atlas.llm_client import OllamaClient
 
 def main():
-    print("=== Project Atlas (Vector Search Edition) ===")
-    
-    
-    folder_path = input("Enter the path to your document folder (e.g., 'data'): ").strip().strip('"')
-    
-    
-    search_keyword = input("Enter a search phrase/keyword to find the right text: ").strip()
-    question = input("Enter your full question for Atlas: ").strip()
-
-    try:
-        chunk_size = int(input("Enter chunk size (words): "))
-        if chunk_size <= 0:
-            print("Chunk size must be greater than zero.")
-            return
+    while True:
+        print("\n=== Project Atlas ===")
+        print("1. Build/Update Knowledge Base (Index Documents)")
+        print("2. Chat with Atlas (Search & Ask)")
+        print("3. Exit")
         
-        results = search_documents_vector(folder_path, search_keyword, chunk_size, top_k=3)
-
-        if not results:
-            print("No documents found or no matching chunks could be generated.")
-            return
-        chunks_for_llm = []
-        print("\n--- Top Relevant Matches ---")
+        choice = input("Select an option (1-3): ").strip()
         
-        for i, result in enumerate(results):
-            score_percentage = round(result['score'] * 100, 2)
-            print(f"Match {i+1} (Similarity: {score_percentage}%) from [{result['source']}]:")
-            print(f"\"{result['chunk'][:100]}...\"\n") 
+        if choice == "1":
+            folder_path = input("Enter the path to your document folder: ").strip().strip('"')
+            try:
+                chunk_size = int(input("Enter chunk size (words): "))
+                build_index(folder_path, chunk_size)
+            except ValueError:
+                print("Chunk size must be a valid integer.")
+                
+        elif choice == "2":
+            question = input("\nAsk Atlas a question: ").strip()
             
-            chunks_for_llm.append(result["chunk"])
+            # Instantly search the pre-built JSON index
+            results = search_index(question, top_k=3)
+            
+            if not results:
+                continue
+                
+            chunks_for_llm = []
+            print("\n--- Top Relevant Matches ---")
+            for i, result in enumerate(results):
+                score_pct = round(result['score'] * 100, 2)
+                print(f"Match {i+1} ({score_pct}%) from [{result['source']}]:")
+                print(f"\"{result['chunk'][:100]}...\"\n")
+                chunks_for_llm.append(result["chunk"])
 
-        print(f"Sending the top {len(chunks_for_llm)} chunks to Llama 3... (Waiting for Local CPU)")
-        
-        client = OllamaClient()
-        prompt = client.build_prompt(question, chunks_for_llm)
-        answer = client.generate(prompt)
-        
-        print('\n' + '=' * 50)
-        print('AI Answer:')
-        print('=' * 50)
-        print(answer)
-
-    except ValueError:
-        print("Chunk size must be a valid integer.")
-    except RuntimeError as e:
-        print(f"\nAI Error: {e}")
+            print("Sending context to Llama 3... (Waiting for Local CPU)")
+            client = OllamaClient()
+            prompt = client.build_prompt(question, chunks_for_llm)
+            
+            try:
+                answer = client.generate(prompt)
+                print('\n' + '=' * 50)
+                print('AI Answer:')
+                print('=' * 50)
+                print(answer)
+            except RuntimeError as e:
+                print(f"\nAI Error: {e}")
+                
+        elif choice == "3":
+            print("Shutting down Atlas...")
+            break
+        else:
+            print("Invalid choice. Please select 1, 2, or 3.")
 
 if __name__ == "__main__":
     main()
